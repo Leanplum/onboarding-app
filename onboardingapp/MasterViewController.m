@@ -29,6 +29,7 @@ DEFINE_VAR_STRING(json, @"");
     
     [(AppDelegate*)[UIApplication sharedApplication].delegate setData:self.data];
     
+    self.objects = [NSMutableArray new];
     for (NSDictionary* element in self.data) {
         [self.objects addObject:element];
     }
@@ -39,10 +40,10 @@ DEFINE_VAR_STRING(json, @"");
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    self.navigationItem.leftBarButtonItem = self.editButtonItem;
+//    self.navigationItem.leftBarButtonItem = self.editButtonItem;
     
     self.objects = [NSMutableArray new];
-    
+
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
     [Leanplum addVariablesChangedResponder:self withSelector:@selector(variablesChanged)];
 }
@@ -80,6 +81,7 @@ DEFINE_VAR_STRING(json, @"");
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 //    NSString *title = self.data[indexPath.row];
 //    NSDictionary *steps = self.data[indexPath.row];
+    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 
     [self performSegueWithIdentifier:@"details" sender:self];
     
@@ -106,11 +108,11 @@ DEFINE_VAR_STRING(json, @"");
     return cell;
 }
 
-
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
+//
+//- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+//    // Return NO if you do not want the specified item to be editable.
+//    return YES;
+//}
 
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {

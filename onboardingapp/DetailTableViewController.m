@@ -52,6 +52,7 @@
     
     NSDictionary *item = self.data[indexPath.row];
     cell.textLabel.text = [[item allKeys] objectAtIndex:0];
+    cell.detailTextLabel.text = [[item allValues] objectAtIndex:0];
     
     return cell;
 }

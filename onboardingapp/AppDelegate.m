@@ -14,25 +14,11 @@
 + (void)setSocketHostName:(NSString *) hostName withPortNumber:(int)port;
 @end
 
-@interface Leanplum ()
-+ (void)setSocketHostName:(NSString *) hostName withPortNumber:(int)port;
-@end
-
 @interface AppDelegate () <UISplitViewControllerDelegate>
 
 @end
 
 @implementation AppDelegate
-
-DEFINE_VAR_STRING(json, @"");
-
-- (void)variablesChanged {
-    NSError* error;
-    NSString *string = json.stringValue;
-    NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:[string dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&error];
-    
-    NSLog(@"%@", dictionary);
-}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [Leanplum setApiHostName:@"leanplum-staging.appspot.com" withServletName:@"api" usingSsl:YES];
@@ -40,9 +26,6 @@ DEFINE_VAR_STRING(json, @"");
     [Leanplum setAppId:@"app_uvswS5LJNpRoldS7NVvH9sKTtNgncBmrnIGoOpMRhpo" withDevelopmentKey:@"dev_DntmuDCerQFnfhJsfZ7IlU75DcbjhhSIptHAGENJlEo"];
     
     [Leanplum start];
-    
-    [Leanplum addVariablesChangedResponder:self withSelector:@selector(variablesChanged)];
-    
     
     // Override point for customization after application launch.
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;

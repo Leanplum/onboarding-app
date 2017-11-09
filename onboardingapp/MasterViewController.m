@@ -8,6 +8,8 @@
 
 #import "MasterViewController.h"
 #import "DetailViewController.h"
+#import "AppDelegate.h"
+#import "Leanplum/Leanplum.h"
 
 @interface MasterViewController ()
 
@@ -16,14 +18,31 @@
 
 @implementation MasterViewController
 
+DEFINE_VAR_STRING(json, @"");
+
+- (void)variablesChanged {
+    NSError* error;
+    NSString *string = json.stringValue;
+    NSDictionary *data = [NSJSONSerialization JSONObjectWithData:[string dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&error];
+    
+    [(AppDelegate*)[UIApplication sharedApplication].delegate setData:data];
+    
+    for (NSDictionary* element in data) {
+        [self.objects addObject:element];
+    }
+    NSLog(@"data updated");
+    [self.tableView reloadData];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     self.navigationItem.leftBarButtonItem = self.editButtonItem;
-
-    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewObject:)];
-    self.navigationItem.rightBarButtonItem = addButton;
+    
+    self.objects = [NSMutableArray new];
+    
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
+    [Leanplum addVariablesChangedResponder:self withSelector:@selector(variablesChanged)];
 }
 
 
@@ -37,17 +56,6 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
-
-- (void)insertNewObject:(id)sender {
-    if (!self.objects) {
-        self.objects = [[NSMutableArray alloc] init];
-    }
-    [self.objects insertObject:[NSDate date] atIndex:0];
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-    [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-}
-
 
 #pragma mark - Segues
 
@@ -78,8 +86,8 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
 
-    NSDate *object = self.objects[indexPath.row];
-    cell.textLabel.text = [object description];
+    NSDictionary *object = self.objects[indexPath.row];
+//    cell.textLabel.text = [object];
     return cell;
 }
 

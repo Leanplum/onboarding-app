@@ -7,8 +7,11 @@
 //
 
 #import "DetailTableViewController.h"
+#import "Leanplum/Leanplum.h"
 
 @interface DetailTableViewController ()
+
+@property NSMutableArray *data;
 
 @end
 
@@ -16,6 +19,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.data = [NSMutableArray new ];
+    for (NSDictionary *item in self.steps) {
+        [self.data addObject:item];
+    }
     
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -32,24 +40,23 @@
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-#warning Incomplete implementation, return the number of sections
-    return 0;
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-#warning Incomplete implementation, return the number of rows
-    return 0;
+    return self.steps.count;
 }
 
-/*
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
     
-    // Configure the cell...
+    NSDictionary *item = self.data[indexPath.row];
+    cell.textLabel.text = [[item allKeys] objectAtIndex:0];
     
     return cell;
 }
-*/
+
+
 
 /*
 // Override to support conditional editing of the table view.
@@ -94,5 +101,15 @@
     // Pass the selected object to the new view controller.
 }
 */
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+    [self.tableView cellForRowAtIndexPath:indexPath].accessoryType = UITableViewCellAccessoryCheckmark;
+
+    NSString *title = self.data[indexPath.row];
+    [Leanplum track:title];
+}
+
 
 @end

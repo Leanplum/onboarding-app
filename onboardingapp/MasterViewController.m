@@ -13,7 +13,9 @@
 
 @interface MasterViewController ()
 
+@property NSMutableDictionary *data;
 @property NSMutableArray *objects;
+
 @end
 
 @implementation MasterViewController
@@ -23,11 +25,11 @@ DEFINE_VAR_STRING(json, @"");
 - (void)variablesChanged {
     NSError* error;
     NSString *string = json.stringValue;
-    NSDictionary *data = [NSJSONSerialization JSONObjectWithData:[string dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&error];
+    self.data = [NSJSONSerialization JSONObjectWithData:[string dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&error];
     
-    [(AppDelegate*)[UIApplication sharedApplication].delegate setData:data];
+    [(AppDelegate*)[UIApplication sharedApplication].delegate setData:self.data];
     
-    for (NSDictionary* element in data) {
+    for (NSDictionary* element in self.data) {
         [self.objects addObject:element];
     }
     NSLog(@"data updated");
@@ -60,17 +62,33 @@ DEFINE_VAR_STRING(json, @"");
 #pragma mark - Segues
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if ([[segue identifier] isEqualToString:@"showDetail"]) {
+    if ([[segue identifier] isEqualToString:@"details"]) {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
         NSString *title = self.objects[indexPath.row];
-        
+        NSDictionary *steps = [self.data objectForKey:title];
+
         [Leanplum setUserAttributes:@{@"Employee Role": title}];
-        DetailViewController *controller = (DetailViewController *)[[segue destinationViewController] topViewController];
+        DetailTableViewController *controller = (DetailTableViewController *)[segue destinationViewController];
+
+        [controller setSteps:steps];
     }
 }
 
 
 #pragma mark - Table View
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+//    NSString *title = self.data[indexPath.row];
+//    NSDictionary *steps = self.data[indexPath.row];
+
+    [self performSegueWithIdentifier:@"details" sender:self];
+    
+//    [Leanplum setUserAttributes:@{@"Employee Role": title}];
+//    DetailTableViewController *controller = (DetailTableViewController *)[[segue destinationViewController] topViewController];
+//
+//    [controller setSteps:steps];
+
+}
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;

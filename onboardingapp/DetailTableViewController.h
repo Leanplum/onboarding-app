@@ -10,4 +10,6 @@
 
 @interface DetailTableViewController : UITableViewController
 
+@property NSDictionary *steps;
+
 @end

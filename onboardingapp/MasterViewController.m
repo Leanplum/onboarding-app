@@ -7,7 +7,7 @@
 //
 
 #import "MasterViewController.h"
-#import "DetailViewController.h"
+#import "DetailTableViewController.h"
 #import "AppDelegate.h"
 #import "Leanplum/Leanplum.h"
 
@@ -62,11 +62,10 @@ DEFINE_VAR_STRING(json, @"");
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        NSDate *object = self.objects[indexPath.row];
+        NSString *title = self.objects[indexPath.row];
+        
+        [Leanplum setUserAttributes:@{@"Employee Role": title}];
         DetailViewController *controller = (DetailViewController *)[[segue destinationViewController] topViewController];
-        [controller setDetailItem:object];
-        controller.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
-        controller.navigationItem.leftItemsSupplementBackButton = YES;
     }
 }
 
@@ -77,17 +76,15 @@ DEFINE_VAR_STRING(json, @"");
     return 1;
 }
 
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.objects.count;
 }
 
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
 
-    NSDictionary *object = self.objects[indexPath.row];
-//    cell.textLabel.text = [object];
+    NSString *title = self.objects[indexPath.row];
+    cell.textLabel.text = title;
     return cell;
 }
 
